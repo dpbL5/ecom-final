@@ -2,6 +2,8 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from ecommerce_common.permissions import IsAdminOrStaff
+
 from .models import ProductReview
 from .serializers import ProductReviewSerializer
 
@@ -9,6 +11,11 @@ from .serializers import ProductReviewSerializer
 class ProductReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ProductReviewSerializer
     queryset = ProductReview.objects.all().order_by("-created_at")
+
+    def get_permissions(self):
+        if self.action in {"approve", "reject"}:
+            return [IsAdminOrStaff()]
+        return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user

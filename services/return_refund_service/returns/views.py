@@ -2,6 +2,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from ecommerce_common.permissions import IsAdminOrStaff
+
 from .models import RefundRequest, ReturnRequest
 from .serializers import RefundRequestSerializer, ReturnRequestSerializer
 
@@ -9,6 +11,11 @@ from .serializers import RefundRequestSerializer, ReturnRequestSerializer
 class ReturnRequestViewSet(viewsets.ModelViewSet):
     serializer_class = ReturnRequestSerializer
     queryset = ReturnRequest.objects.prefetch_related("items", "refund_requests").all().order_by("-created_at")
+
+    def get_permissions(self):
+        if self.action in {"approve", "reject", "receive"}:
+            return [IsAdminOrStaff()]
+        return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user
@@ -37,5 +44,6 @@ class ReturnRequestViewSet(viewsets.ModelViewSet):
 
 
 class RefundRequestViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminOrStaff]
     serializer_class = RefundRequestSerializer
     queryset = RefundRequest.objects.select_related("return_request").all().order_by("-created_at")

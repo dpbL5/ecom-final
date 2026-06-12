@@ -121,17 +121,25 @@ def configure(
         "UNAUTHENTICATED_USER": None,
     }
 
-    namespace["DATABASES"] = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", f"{service_name}_db"),
-            "USER": os.getenv("POSTGRES_USER", "ecommerce"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "ecommerce"),
-            "HOST": os.getenv("POSTGRES_HOST", f"{service_name}-db"),
-            "PORT": os.getenv("POSTGRES_PORT", "5432"),
-            "CONN_MAX_AGE": int(os.getenv("POSTGRES_CONN_MAX_AGE", "60")),
+    if env_bool("DJANGO_TEST_SQLITE", False):
+        namespace["DATABASES"] = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": ":memory:",
+            }
         }
-    }
+    else:
+        namespace["DATABASES"] = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": os.getenv("POSTGRES_DB", f"{service_name}_db"),
+                "USER": os.getenv("POSTGRES_USER", "ecommerce"),
+                "PASSWORD": os.getenv("POSTGRES_PASSWORD", "ecommerce"),
+                "HOST": os.getenv("POSTGRES_HOST", f"{service_name}-db"),
+                "PORT": os.getenv("POSTGRES_PORT", "5432"),
+                "CONN_MAX_AGE": int(os.getenv("POSTGRES_CONN_MAX_AGE", "60")),
+            }
+        }
 
     namespace["STATIC_URL"] = "static/"
     namespace["CORS_ALLOWED_ORIGINS"] = env_list(

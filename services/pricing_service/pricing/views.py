@@ -5,6 +5,8 @@ from django.utils import timezone
 from rest_framework import status, views, viewsets
 from rest_framework.response import Response
 
+from ecommerce_common.permissions import IsAdminOrStaff
+
 from .models import Coupon, PriceBook, ProductPrice, PromotionCampaign
 from .serializers import (
     CouponSerializer,
@@ -16,22 +18,29 @@ from .serializers import (
 )
 
 
-class PriceBookViewSet(viewsets.ModelViewSet):
+class PricingWritePermissionMixin:
+    def get_permissions(self):
+        if self.action in {"list", "retrieve"}:
+            return super().get_permissions()
+        return [IsAdminOrStaff()]
+
+
+class PriceBookViewSet(PricingWritePermissionMixin, viewsets.ModelViewSet):
     queryset = PriceBook.objects.all().order_by("code")
     serializer_class = PriceBookSerializer
 
 
-class ProductPriceViewSet(viewsets.ModelViewSet):
+class ProductPriceViewSet(PricingWritePermissionMixin, viewsets.ModelViewSet):
     queryset = ProductPrice.objects.select_related("price_book").all().order_by("sku")
     serializer_class = ProductPriceSerializer
 
 
-class PromotionCampaignViewSet(viewsets.ModelViewSet):
+class PromotionCampaignViewSet(PricingWritePermissionMixin, viewsets.ModelViewSet):
     queryset = PromotionCampaign.objects.all().order_by("-created_at")
     serializer_class = PromotionCampaignSerializer
 
 
-class CouponViewSet(viewsets.ModelViewSet):
+class CouponViewSet(PricingWritePermissionMixin, viewsets.ModelViewSet):
     queryset = Coupon.objects.select_related("campaign").all().order_by("-created_at")
     serializer_class = CouponSerializer
 

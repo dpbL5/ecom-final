@@ -2,21 +2,31 @@ from django.db import transaction
 from rest_framework import status, views, viewsets
 from rest_framework.response import Response
 
+from ecommerce_common.permissions import IsAdminOrStaff
+
 from .models import StockItem, StockReservation, Warehouse
 from .serializers import ReserveStockSerializer, StockItemSerializer, StockReservationSerializer, WarehouseSerializer
 
 
-class WarehouseViewSet(viewsets.ModelViewSet):
+class InventoryWritePermissionMixin:
+    def get_permissions(self):
+        if self.action in {"list", "retrieve"}:
+            return super().get_permissions()
+        return [IsAdminOrStaff()]
+
+
+class WarehouseViewSet(InventoryWritePermissionMixin, viewsets.ModelViewSet):
     queryset = Warehouse.objects.all().order_by("code")
     serializer_class = WarehouseSerializer
 
 
-class StockItemViewSet(viewsets.ModelViewSet):
+class StockItemViewSet(InventoryWritePermissionMixin, viewsets.ModelViewSet):
     queryset = StockItem.objects.select_related("warehouse").all().order_by("sku")
     serializer_class = StockItemSerializer
 
 
 class StockReservationViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAdminOrStaff]
     queryset = StockReservation.objects.select_related("stock_item").all().order_by("-created_at")
     serializer_class = StockReservationSerializer
 

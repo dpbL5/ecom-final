@@ -3,6 +3,8 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from ecommerce_common.permissions import IsAdminOrStaff
+
 from .models import Order
 from .serializers import OrderSerializer
 
@@ -10,6 +12,11 @@ from .serializers import OrderSerializer
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     queryset = Order.objects.prefetch_related("lines", "status_history").all().order_by("-created_at")
+
+    def get_permissions(self):
+        if self.action in {"confirm", "cancel", "ship", "complete"}:
+            return [IsAdminOrStaff()]
+        return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user

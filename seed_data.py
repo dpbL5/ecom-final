@@ -4,8 +4,11 @@ import re
 import subprocess
 import sys
 import unicodedata
+import html as html_lib
 from decimal import Decimal
 from urllib.parse import quote_plus
+
+import requests
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -79,7 +82,7 @@ def build_users():
         },
     ]
     segments = ["tech_lover", "book_reader", "fashion_buyer", "home_cook", "value_hunter"]
-    for index in range(1, 51):
+    for index in range(1, 9):
         email = "customer@example.com" if index == 1 else f"customer{index:02d}@example.com"
         users.append(
             {
@@ -249,6 +252,282 @@ def build_products():
     return products
 
 
+HTTP_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/125.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+}
+
+
+def clean_text(value):
+    value = html_lib.unescape(value or "")
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def parse_vnd(value, default=100000):
+    if not value:
+        return default
+    digits = re.sub(r"[^\d]", "", value)
+    return int(digits) if digits else default
+
+
+def fetch_text(url, timeout=30):
+    response = requests.get(url, headers=HTTP_HEADERS, timeout=timeout)
+    response.raise_for_status()
+    return response.text
+
+
+def first_brand(name, default):
+    known = [
+        "Apple", "Samsung", "Xiaomi", "OPPO", "Vivo", "Honor", "POCO", "Realme", "Nokia",
+        "ASUS", "Dell", "Lenovo", "HP", "Acer", "MSI", "LG", "Sony", "JBL", "Garmin",
+        "Coolmate", "Doraemon", "Fahasa", "NXB", "James Clear", "Nguyễn Nhật Ánh",
+    ]
+    lowered = name.lower()
+    for brand in known:
+        if brand.lower() in lowered:
+            return brand
+    return default
+
+
+def scraped_product(
+    *,
+    source,
+    source_url,
+    title,
+    category_slug,
+    product_type,
+    brand,
+    price,
+    compare_at=None,
+    image_url=None,
+    description=None,
+    attributes=None,
+    quantity=None,
+):
+    slug = slugify(title)
+    sku = f"{source}-{slug}".upper()[:64].strip("-")
+    compare_at = compare_at or int(price * 1.12)
+    attributes = attributes or {}
+    attributes.update({"source": source.lower(), "source_url": source_url})
+    return {
+        "sku": sku,
+        "name": title,
+        "slug": slugify(f"{title}-{source}"),
+        "category_slug": category_slug,
+        "description": description or f"{title} được seed từ {source_url}",
+        "brand": brand,
+        "product_type": product_type,
+        "status": "published",
+        "price": int(price),
+        "compare_at": int(compare_at),
+        "quantity": int(quantity if quantity is not None else RANDOM.randint(35, 240)),
+        "rating": round(RANDOM.uniform(4.2, 4.95), 2),
+        "attributes": attributes,
+        "image_urls": [image_url] if image_url else [],
+        "search_text": f"{title} {brand} {product_type} {source} {source_url}",
+    }
+
+
+def add_unique(products, item, seen):
+    if not item["image_urls"]:
+        return
+    key = item["sku"]
+    if key in seen:
+        return
+    seen.add(key)
+    products.append(item)
+
+
+def scrape_cellphones(limit=36):
+    products = []
+    seen = set()
+    paths = ["mobile.html", "laptop.html", "tablet.html", "phu-kien.html"]
+    for path in paths:
+        if len(products) >= limit:
+            break
+        url = f"https://cellphones.com.vn/{path}"
+        try:
+            html = fetch_text(url)
+        except Exception as exc:
+            print(f"CellphoneS scrape skipped {url}: {exc}")
+            continue
+        anchors = re.findall(
+            r'(<a[^>]+href="https://cellphones\.com\.vn/[^"]+"[^>]*class="product__link button__link".*?</a>)',
+            html,
+            re.S,
+        )
+        for anchor in anchors:
+            href_match = re.search(r'href="([^"]+)"', anchor)
+            image_match = re.search(r'<img src="([^"]+)"[^>]*alt="([^"]*)"', anchor)
+            name_match = re.search(r'<div class="product__name"><h3>(.*?)</h3>', anchor, re.S)
+            price_match = re.search(r'product__price--show"[^>]*>\s*([^<]+)', anchor, re.S)
+            compare_match = re.search(r'product__price--through"[^>]*>\s*([^<]+)', anchor, re.S)
+            if not (href_match and image_match and name_match and price_match):
+                continue
+            title = clean_text(name_match.group(1))
+            price = parse_vnd(price_match.group(1), 1000000)
+            compare_at = parse_vnd(compare_match.group(1), int(price * 1.08)) if compare_match else int(price * 1.08)
+            item = scraped_product(
+                source="CPS",
+                source_url=href_match.group(1),
+                title=title,
+                category_slug="dien-thoai-phu-kien",
+                product_type="electronics",
+                brand=first_brand(title, "CellphoneS"),
+                price=price,
+                compare_at=compare_at,
+                image_url=html_lib.unescape(image_match.group(1)),
+                description=f"{title} được scrape từ CellphoneS.",
+                attributes={"retailer": "CellphoneS", "category_path": path},
+            )
+            add_unique(products, item, seen)
+            if len(products) >= limit:
+                break
+    return products
+
+
+def coolmate_image_url(path):
+    if not path:
+        return ""
+    if path.startswith("http"):
+        return path
+    if path.startswith("/image/"):
+        return f"https://mcdn.coolmate.me{path}"
+    if path.startswith("/uploads/"):
+        return f"https://n7media.coolmate.me{path}"
+    return f"https://www.coolmate.me{path}"
+
+
+def scrape_coolmate(limit=32):
+    products = []
+    seen = set()
+    paths = ["collection/ao-nam", "collection/quan-nam", "collection/do-nam"]
+    decoder = json.JSONDecoder()
+    for path in paths:
+        if len(products) >= limit:
+            break
+        source_url = f"https://www.coolmate.me/{path}"
+        try:
+            text = fetch_text(source_url)
+        except Exception as exc:
+            print(f"Coolmate scrape skipped {source_url}: {exc}")
+            continue
+        text = text.replace('\\"', '"').replace("\\/", "/")
+        pos = 0
+        while len(products) < limit:
+            index = text.find('{"title":"', pos)
+            if index < 0:
+                break
+            try:
+                obj, end = decoder.raw_decode(text[index:])
+                pos = index + max(end, 1)
+            except Exception:
+                pos = index + 1
+                continue
+            if not isinstance(obj, dict) or not obj.get("href", "").startswith("/product/"):
+                continue
+            if "regular_price" not in obj:
+                continue
+            variant = {}
+            quantity = 0
+            for variants in (obj.get("mapped_variants") or {}).values():
+                if variants:
+                    variant = variants[0]
+                    quantity = sum(item.get("quantity") or 0 for item in variants)
+                    break
+            image = coolmate_image_url(variant.get("thumbnail") or variant.get("colorImage"))
+            item = scraped_product(
+                source="COOLMATE",
+                source_url=f"https://www.coolmate.me{obj['href']}",
+                title=clean_text(obj["title"]),
+                category_slug="thoi-trang",
+                product_type="fashion",
+                brand="Coolmate",
+                price=int(obj.get("regular_price") or 199000),
+                compare_at=int(obj.get("compare_price") or obj.get("regular_price") or 199000),
+                image_url=image,
+                description=f"{clean_text(obj['title'])} được scrape từ Coolmate.",
+                attributes={
+                    "retailer": "Coolmate",
+                    "color": variant.get("color", ""),
+                    "size": variant.get("size", ""),
+                    "material": "Coolmate fabric",
+                },
+                quantity=quantity or None,
+            )
+            add_unique(products, item, seen)
+    return products
+
+
+def scrape_fahasa(limit=32):
+    products = []
+    seen = set()
+    paths = ["sach-trong-nuoc.html", "sach-trong-nuoc.html?p=2", "sach-trong-nuoc.html?p=3"]
+    for path in paths:
+        if len(products) >= limit:
+            break
+        source_url = f"https://www.fahasa.com/{path}"
+        reader_url = f"https://r.jina.ai/http://https://www.fahasa.com/{path}"
+        try:
+            text = fetch_text(reader_url, timeout=45)
+        except Exception as exc:
+            print(f"Fahasa scrape skipped {source_url}: {exc}")
+            continue
+        blocks = re.split(r"\n\*   ## ", text)
+        for block in blocks:
+            image_match = re.search(
+                r"!\[Image \d+: ([^\]]+)\]\((https://cdn1\.fahasa\.com/media/catalog/product/[^)]+)\)",
+                block,
+            )
+            link_match = re.search(r"\]\((https://www\.fahasa\.com/[^) ]+)", block)
+            if not (image_match and link_match):
+                continue
+            title = clean_text(image_match.group(1))
+            prices = re.findall(r"([\d.]+)\s*đ", block)
+            if not prices:
+                continue
+            price = parse_vnd(prices[0], 100000)
+            compare_at = parse_vnd(prices[1], int(price * 1.15)) if len(prices) > 1 else int(price * 1.15)
+            item = scraped_product(
+                source="FAHASA",
+                source_url=link_match.group(1).split("?")[0],
+                title=title,
+                category_slug="sach-do-choi",
+                product_type="book",
+                brand="Fahasa",
+                price=price,
+                compare_at=compare_at,
+                image_url=image_match.group(2),
+                description=f"{title} được scrape từ danh mục Fahasa.",
+                attributes={"retailer": "Fahasa", "format": "paperback"},
+            )
+            add_unique(products, item, seen)
+            if len(products) >= limit:
+                break
+    return products
+
+
+def build_products():
+    products = []
+    seen = set()
+    for item in scrape_fahasa(limit=34) + scrape_cellphones(limit=34) + scrape_coolmate(limit=32):
+        add_unique(products, item, seen)
+
+    if len(products) < 60:
+        raise RuntimeError(f"Only scraped {len(products)} products; refusing to seed mostly empty data.")
+
+    print("SCRAPE_SUMMARY_START")
+    print(json.dumps({
+        "total": len(products),
+        "fahasa": len([p for p in products if p["attributes"].get("retailer") == "Fahasa"]),
+        "cellphones": len([p for p in products if p["attributes"].get("retailer") == "CellphoneS"]),
+        "coolmate": len([p for p in products if p["attributes"].get("retailer") == "Coolmate"]),
+    }, ensure_ascii=False))
+    print("SCRAPE_SUMMARY_END")
+    return products[:100]
+
+
 def build_graph_payload(users, customer_profiles, products, product_ids):
     customers = [u for u in users if u["role"] == "customer"]
     graph_users = [
@@ -298,8 +577,8 @@ def build_graph_payload(users, customer_profiles, products, product_ids):
         same_brand = [p for p in products if p["brand"] == item["brand"] and p["sku"] != item["sku"]]
         targets = []
         if same_brand:
-            targets.extend(same_brand[:1])
-        targets.extend(same_type[index % len(same_type):(index % len(same_type)) + 3])
+            targets.extend(same_brand[:3])
+        targets.extend(same_type[index % len(same_type):(index % len(same_type)) + 6])
         for target in targets:
             if item["sku"] == target["sku"]:
                 continue
@@ -315,16 +594,16 @@ def build_graph_payload(users, customer_profiles, products, product_ids):
                     "reason": f"Cùng nhóm {item['product_type']} và phù hợp hành vi mua sắm tương tự",
                 }
             )
-            if len(similarities) >= 200:
+            if len(similarities) >= 500:
                 break
-        if len(similarities) >= 200:
+        if len(similarities) >= 500:
             break
 
     return {
         "users": graph_users,
         "products": graph_products,
         "interactions": interactions,
-        "similarities": similarities[:200],
+        "similarities": similarities[:500],
     }
 
 
@@ -421,6 +700,9 @@ from catalog.models import Category, Product, ProductVariant
 
 categories_data = json.loads(r'''{py_json(categories_data)}''')
 products_data = json.loads(r'''{py_json(products)}''')
+current_skus = [item["sku"] for item in products_data]
+ProductVariant.objects.exclude(sku__in=current_skus).delete()
+Product.objects.exclude(sku__in=current_skus).delete()
 cats = {{}}
 for item in categories_data:
     category, _ = Category.objects.update_or_create(
@@ -465,6 +747,8 @@ from pricing.models import PriceBook, ProductPrice, PromotionCampaign, Coupon
 
 products_data = json.loads(r'''{py_json(products)}''')
 product_ids = json.loads(r'''{py_json(product_ids)}''')
+current_skus = [item["sku"] for item in products_data]
+ProductPrice.objects.exclude(sku__in=current_skus).delete()
 price_book, _ = PriceBook.objects.update_or_create(
     code="DEFAULT_PB",
     defaults={{"name": "Bảng giá mặc định", "currency": "VND", "is_active": True}},
@@ -492,10 +776,13 @@ print("PRICING_SEEDED")
 
     inventory_code = f"""
 import json
-from inventory.models import Warehouse, StockItem
+from inventory.models import Warehouse, StockItem, StockReservation
 
 products_data = json.loads(r'''{py_json(products)}''')
 product_ids = json.loads(r'''{py_json(product_ids)}''')
+current_skus = [item["sku"] for item in products_data]
+StockReservation.objects.exclude(stock_item__sku__in=current_skus).delete()
+StockItem.objects.exclude(sku__in=current_skus).delete()
 warehouse, _ = Warehouse.objects.update_or_create(
     code="HN_MAIN",
     defaults={{"name": "Kho chính Hà Nội", "city": "Hà Nội", "country": "VN", "is_active": True}},
@@ -521,6 +808,8 @@ from search.models import SearchProductDocument
 
 products_data = json.loads(r'''{py_json(products)}''')
 product_ids = json.loads(r'''{py_json(product_ids)}''')
+current_skus = [item["sku"] for item in products_data]
+SearchProductDocument.objects.exclude(sku__in=current_skus).delete()
 for item in products_data:
     SearchProductDocument.objects.update_or_create(
         product_id=product_ids[item["sku"]]["product_id"],
@@ -554,6 +843,8 @@ from recommendations.graph import Neo4jRecommender
 
 payload = json.loads(r'''{py_json(graph_payload)}''')
 products_by_sku = {{item["sku"]: item for item in payload["products"]}}
+ProductInteraction.objects.all().delete()
+Recommendation.objects.all().delete()
 
 for item in payload["interactions"]:
     product = products_by_sku[item["sku"]]

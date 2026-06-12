@@ -4,17 +4,20 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ecommerce_common.clients import ServiceClient, ServiceClientError, bearer_token_from_request
+from ecommerce_common.permissions import IsAdminOrStaff
 
 from .models import Carrier, DeliveryEvent, Shipment
 from .serializers import CarrierSerializer, ShipmentSerializer, ShipmentStatusSerializer
 
 
 class CarrierViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminOrStaff]
     queryset = Carrier.objects.all().order_by("code")
     serializer_class = CarrierSerializer
 
 
 class ShipmentViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminOrStaff]
     serializer_class = ShipmentSerializer
     queryset = Shipment.objects.select_related("carrier").prefetch_related("events").all().order_by("-created_at")
 

@@ -808,7 +808,7 @@ function RegisterPage({
           </label>
           <label className="field">
             <span>Mật khẩu</span>
-            <input value={password} type="password" onChange={(event) => setPassword(event.target.value)} placeholder="Tối thiểu 6 ký tự" required />
+            <input value={password} type="password" onChange={(event) => setPassword(event.target.value)} placeholder="Tối thiểu 8 ký tự" required />
           </label>
           <button className="primary-button" disabled={loading} type="submit" style={{ width: "100%", minHeight: "44px", marginTop: "10px" }}>
             ĐĂNG KÝ
