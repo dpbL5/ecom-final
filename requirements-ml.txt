@@ -1,0 +1,5 @@
+-r requirements.txt
+
+# Optional dependency for the Keras LSTM path in recommendation-service.
+# Without this package, the recommender still serves deterministic sequence predictions.
+tensorflow>=2.16,<3.0

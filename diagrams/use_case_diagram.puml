@@ -1,0 +1,103 @@
+@startuml
+left to right direction
+
+actor Customer
+actor Staff as Admin
+actor "Payment Gateway" as Payment
+actor Carrier as Carrier
+actor "AI/Recommendation Engine" as AI
+
+package "Catalog" {
+  usecase Browse as "Browse Catalog"
+  usecase ViewProduct as "View Product Details"
+}
+
+package "Cart & Checkout" {
+  usecase ManageCart as "Manage Cart (add/update/view)"
+  usecase Checkout as "Checkout / Create Order"
+  usecase ApplyCoupon as "Apply Coupon / Discount"
+}
+
+package "Orders & Fulfillment" {
+  usecase TrackOrder as "Track Order Status"
+  usecase Returns as "Submit Return / Refund Request"
+  usecase Shipments as "Create / Update Shipments"
+}
+
+package "Payments" {
+  usecase MakePayment as "Make Payment / Pay"
+  usecase ProcessRefund as "Process Refund"
+}
+
+package "Recommendations & AI" {
+  usecase Recommend as "Get Product Recommendations"
+  usecase Chatbot as "AI Chatbot / Ask Product Questions"
+}
+
+package "Account & Admin" {
+  usecase Auth as "Register / Login / Manage Profile"
+  usecase AdminTasks as "Admin: Manage Products / Orders / Analytics"
+  usecase Analytics as "View Sales & Metrics"
+}
+
+' Actor relationships
+Customer --> Browse
+Customer --> ViewProduct
+Customer --> ManageCart
+Customer --> Checkout
+Customer --> ApplyCoupon
+Customer --> TrackOrder
+Customer --> Returns
+Customer --> Recommend
+Customer --> Chatbot
+Customer --> Auth
+
+Admin --> AdminTasks
+Admin --> TrackOrder
+Admin --> Shipments
+Admin --> Returns
+Admin --> Analytics
+
+Payment --> MakePayment
+Payment --> ProcessRefund
+Carrier --> Shipments
+AI --> Recommend
+AI --> Chatbot
+
+' Source references (notes)
+note right of Browse
+Sources:
+- services/catalog_service/catalog/views.py
+- frontend/src/App.tsx
+end note
+
+note right of ManageCart
+Sources:
+- services/cart_service/carts/views.py
+- frontend/src/api.ts
+end note
+
+note right of Checkout
+Sources:
+- services/cart_service/carts/views.py
+- services/order_service/orders/views.py
+- services/pricing_service/ (pricing orchestration)
+end note
+
+note right of MakePayment
+Sources:
+- services/payment_service/payments/views.py
+end note
+
+note right of Shipments
+Sources:
+- services/shipping_service/shipping/views.py
+end note
+
+note right of Recommend
+Sources:
+- services/recommendation_service/recommendations/urls.py
+- frontend/src/components/AIChatbot.tsx
+end note
+
+@enduml

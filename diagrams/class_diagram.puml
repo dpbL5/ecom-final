@@ -1,0 +1,151 @@
+@startuml
+' High-level class diagram for ecommerce_ai
+left to right direction
+
+package "Identity" {
+  class User {
+    +id: UUID
+    +email: string
+    +password_hash: string
+    +role: string
+  }
+  class Customer {
+    +id: UUID
+    +user_id: UUID
+    +first_name: string
+    +last_name: string
+    +phone: string
+  }
+}
+
+package "Catalog" {
+  class Product {
+    +id: UUID
+    +name: string
+    +description: text
+  }
+  class ProductVariant {
+    +id: UUID
+    +product_id: UUID
+    +sku: string
+    +price: Decimal
+  }
+  class Category {
+    +id: UUID
+    +name: string
+  }
+}
+
+package "Cart" {
+  class Cart {
+    +id: UUID
+    +customer_id: UUID
+  }
+  class CartItem {
+    +id: UUID
+    +cart_id: UUID
+    +product_variant_id: UUID
+    +quantity: int
+  }
+}
+
+package "Order" {
+  class Order {
+    +id: UUID
+    +customer_id: UUID
+    +status: string
+    +total: Decimal
+  }
+  class OrderItem {
+    +id: UUID
+    +order_id: UUID
+    +product_variant_id: UUID
+    +quantity: int
+    +price: Decimal
+  }
+}
+
+package "Fulfillment & Inventory" {
+  class Warehouse {
+    +id: UUID
+    +location: string
+  }
+  class StockItem {
+    +id: UUID
+    +product_variant_id: UUID
+    +warehouse_id: UUID
+    +quantity: int
+  }
+  class Shipment {
+    +id: UUID
+    +order_id: UUID
+    +carrier: string
+    +tracking_number: string
+    +status: string
+  }
+}
+
+package "Payments & Returns" {
+  class Payment {
+    +id: UUID
+    +order_id: UUID
+    +amount: Decimal
+    +status: string
+    +provider_transaction_id: string
+  }
+  class ReturnRequest {
+    +id: UUID
+    +order_id: UUID
+    +reason: text
+    +status: string
+  }
+}
+
+package "Engagement & Analytics" {
+  class Review {
+    +id: UUID
+    +product_id: UUID
+    +customer_id: UUID
+    +rating: int
+    +content: text
+  }
+  class Recommendation {
+    +id: UUID
+    +customer_id: UUID
+    +product_id: UUID
+    +score: float
+  }
+  class AnalyticsEvent {
+    +id: UUID
+    +event_type: string
+    +payload: json
+    +timestamp: datetime
+  }
+}
+
+' Relationships
+User "1" <|-- Customer
+Customer "1" o-- "*" Cart : has
+Cart "1" o-- "*" CartItem
+Product "1" o-- "*" ProductVariant
+ProductVariant "1" o-- "*" StockItem
+Warehouse "1" o-- "*" StockItem
+Order "1" o-- "*" OrderItem
+Order "1" -- "0..1" Shipment
+Order "1" -- "1" Payment
+Customer "1" o-- "*" Order
+Product "1" o-- "*" Review
+Customer "1" o-- "*" Review
+Customer "1" o-- "*" Recommendation
+
+' Source references
+note right
+Key sources: services/*/models.py, views.py and frontend types
+See: services/catalog_service/catalog/models.py
+See: services/cart_service/carts/models.py
+See: services/order_service/orders/models.py
+See: services/payment_service/payments/models.py
+See: services/inventory_service/inventory/models.py
+end note
+
+@enduml

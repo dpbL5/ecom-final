@@ -1,0 +1,78 @@
+@startuml
+title Sequence: Complete purchase -> shipped
+actor Customer
+participant Frontend
+participant CartService
+participant PricingService
+participant InventoryService
+participant OrderService
+participant PaymentService
+participant "Payment Gateway" as PaymentGateway
+participant ShippingService
+participant Carrier
+participant NotificationService
+
+Customer -> Frontend: Clicks "Checkout"
+activate Frontend
+Frontend -> CartService: POST /checkout (cartId, payment, shipping)
+activate CartService
+CartService -> PricingService: calculatePrice(cart)
+activate PricingService
+PricingService --> CartService: priceDetails
+deactivate PricingService
+
+CartService -> InventoryService: reserveStock(cart.items)
+activate InventoryService
+InventoryService --> CartService: reservation_ok (or fail)
+deactivate InventoryService
+
+CartService -> OrderService: createOrder(cart, priceDetails, reservation)
+activate OrderService
+OrderService --> CartService: order_created(orderId)
+
+OrderService -> PaymentService: createPayment(orderId, amount)
+activate PaymentService
+PaymentService -> PaymentGateway: charge(paymentInfo)
+activate PaymentGateway
+PaymentGateway --> PaymentService: success(transaction_id)
+deactivate PaymentGateway
+
+PaymentService --> OrderService: payment_succeeded(transaction_id)
+deactivate PaymentService
+OrderService -> OrderService: mark_paid(orderId)
+
+OrderService -> ShippingService: createShipment(orderId, shippingInfo)
+activate ShippingService
+ShippingService -> Carrier: request_pickup(order, address)
+activate Carrier
+Carrier --> ShippingService: pickup_scheduled(trackingNumber)
+deactivate Carrier
+
+ShippingService --> OrderService: shipment_created(trackingNumber)
+deactivate ShippingService
+OrderService -> NotificationService: sendOrderConfirmation(orderId, trackingNumber)
+activate NotificationService
+NotificationService --> Customer: email/SMS
+deactivate NotificationService
+
+deactivate OrderService
+Frontend --> Customer: Show confirmation + tracking
+deactivate Frontend
+
+' Later: Carrier updates status via webhook
+Carrier -> ShippingService: webhook(status_update, trackingNumber)
+activate ShippingService
+ShippingService -> OrderService: updateShipmentStatus(orderId, status)
+OrderService -> NotificationService: sendShipmentUpdate(orderId, status)
+NotificationService --> Customer: email/SMS
+deactivate ShippingService
+
+note right
+Sources:
+- services/cart_service/carts/views.py
+- services/order_service/orders/views.py
+- services/payment_service/payments/views.py
+- services/shipping_service/shipping/views.py
+end note
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+title Sequence: Chatbot Interaction
+actor Customer
+participant Frontend
+participant AIService
+participant "LLM Provider" as LLM
+participant CatalogService
+participant OrderService
+participant AnalyticsService
+
+Customer -> Frontend: Opens chat and sends message
+activate Frontend
+Frontend -> AIService: POST /chat (userId, message, context)
+activate AIService
+AIService -> AnalyticsService: logMessageIncoming(userId, message)
+activate AnalyticsService
+AnalyticsService --> AIService: ack
+deactivate AnalyticsService
+
+AIService -> LLM: generateResponse(prompt + context)
+activate LLM
+LLM --> AIService: reply_text (may include actions: suggest products)
+deactivate LLM
+
+alt needs product info
+  AIService -> CatalogService: GET /products/{id}
+  activate CatalogService
+  CatalogService --> AIService: productDetails
+  deactivate CatalogService
+end
+
+AIService -> AnalyticsService: logBotReply(userId, reply)
+AnalyticsService --> AIService: ack
+
+AIService --> Frontend: reply_text (+ suggested actions)
+deactivate AIService
+Frontend --> Customer: display bot reply
+
+par Customer accepts 'Add to cart' action
+  Frontend -> CartService: POST /cart/items (productVariantId)
+  CartService --> Frontend: item_added
+  Frontend --> Customer: show updated cart
+end
+
+note right
+Sources:
+- frontend/src/components/AIChatbot.tsx
+- services/recommendation_service/recommendations/urls.py
+- services/order_service/orders/views.py (for order context)
+end note
+
+@enduml

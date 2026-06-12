@@ -1,0 +1,118 @@
+{
+  "users": [
+    {
+      "customer_id": "demo-customer",
+      "email": "customer@example.com",
+      "full_name": "Shopee Customer",
+      "segment": "tech_reader"
+    },
+    {
+      "customer_id": "staff-demo",
+      "email": "staff@example.com",
+      "full_name": "Staff User",
+      "segment": "operations"
+    }
+  ],
+  "products": [
+    {
+      "product_id": "IPHONE15PM",
+      "sku": "IPHONE15PM",
+      "name": "iPhone 15 Pro Max 256GB Chính Hãng",
+      "product_type": "electronics",
+      "brand": "Apple",
+      "price": 29990000,
+      "search_text": "iphone 15 pro max 256gb apple smartphone dien thoai cao cap"
+    },
+    {
+      "product_id": "LOCK-AIRFRYER",
+      "sku": "LOCK-AIRFRYER",
+      "name": "Nồi Chiên Không Dầu Lock&Lock Eco Fryer 5.2L",
+      "product_type": "electronics",
+      "brand": "Lock&Lock",
+      "price": 1890000,
+      "search_text": "noi chien khong dau lock lock do gia dung bep thong minh"
+    },
+    {
+      "product_id": "TSHIRT-SHOPEE-ORG",
+      "sku": "TSHIRT-SHOPEE-ORG",
+      "name": "Áo thun Polo Shopee Orange Premium",
+      "product_type": "fashion",
+      "brand": "Shopee OS",
+      "price": 199000,
+      "search_text": "ao thun polo shopee orange thoi trang unisex"
+    },
+    {
+      "product_id": "DDD-BOOK-EVANS",
+      "sku": "DDD-BOOK-EVANS",
+      "name": "Sách Domain-Driven Design - Eric Evans",
+      "product_type": "book",
+      "brand": "Addison-Wesley",
+      "price": 850000,
+      "search_text": "domain driven design eric evans software architecture microservices"
+    },
+    {
+      "product_id": "CLEAN-CODE-BOOK",
+      "sku": "CLEAN-CODE-BOOK",
+      "name": "Sách Clean Code - Robert C. Martin",
+      "product_type": "book",
+      "brand": "Prentice Hall",
+      "price": 620000,
+      "search_text": "clean code robert martin lap trinh phan mem best practices"
+    }
+  ],
+  "interactions": [
+    {
+      "customer_id": "demo-customer",
+      "sku": "IPHONE15PM",
+      "event_type": "viewed",
+      "weight": 1.0,
+      "timestamp": "2026-06-12T08:00:00+07:00"
+    },
+    {
+      "customer_id": "demo-customer",
+      "sku": "DDD-BOOK-EVANS",
+      "event_type": "added_to_cart",
+      "weight": 2.0,
+      "timestamp": "2026-06-12T08:05:00+07:00"
+    },
+    {
+      "customer_id": "demo-customer",
+      "sku": "TSHIRT-SHOPEE-ORG",
+      "event_type": "wishlisted",
+      "weight": 1.4,
+      "timestamp": "2026-06-12T08:10:00+07:00"
+    }
+  ],
+  "similarities": [
+    {
+      "from_sku": "DDD-BOOK-EVANS",
+      "to_sku": "CLEAN-CODE-BOOK",
+      "score": 0.92,
+      "reason": "Cùng nhóm sách kỹ thuật phần mềm và kiến trúc hệ thống"
+    },
+    {
+      "from_sku": "IPHONE15PM",
+      "to_sku": "LOCK-AIRFRYER",
+      "score": 0.35,
+      "reason": "Cùng nhóm electronics, phù hợp khách hàng quan tâm thiết bị thông minh"
+    },
+    {
+      "from_sku": "TSHIRT-SHOPEE-ORG",
+      "to_sku": "IPHONE15PM",
+      "score": 0.25,
+      "reason": "Sản phẩm bán chạy trong chiến dịch Shopee OS"
+    },
+    {
+      "from_sku": "CLEAN-CODE-BOOK",
+      "to_sku": "DDD-BOOK-EVANS",
+      "score": 0.88,
+      "reason": "Người đọc Clean Code thường quan tâm Domain-Driven Design"
+    },
+    {
+      "from_sku": "LOCK-AIRFRYER",
+      "to_sku": "IPHONE15PM",
+      "score": 0.30,
+      "reason": "Cùng tệp khách hàng thích sản phẩm công nghệ tiện ích"
+    }
+  ]
+}

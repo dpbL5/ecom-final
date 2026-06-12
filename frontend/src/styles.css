@@ -1,0 +1,1601 @@
+/* ========================================================
+   DESIGN SYSTEM - SHOPEE BRAND AESTHETICS (ORANGE THEME)
+   ======================================================== */
+
+:root {
+  color-scheme: light;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #333333;
+  background: #f5f5f5; /* Shopee's light grey background */
+  letter-spacing: -0.01em;
+
+  /* Shopee brand colors */
+  --primary: #ee4d2d;         /* Shopee Orange */
+  --primary-hover: #d73c1c;
+  --primary-light: #ffeae6;
+  --secondary: #ff5722;       /* Shopee Coral Red */
+  --secondary-hover: #e64a19;
+  --secondary-light: #fbe9e7;
+  --accent: #ffb700;          /* Shopee Discount Gold */
+  --accent-hover: #ffa000;
+  --accent-light: #fff8e1;
+  --danger: #ff002b;
+  --danger-light: #ffebee;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  
+  --bg-app: #f5f5f5;
+  --bg-card: #ffffff;
+  --bg-surface: #fafafa;
+  --border: rgba(0, 0, 0, 0.09);
+  --text-main: #222222;
+  --text-muted: #757575;
+  --text-inverse: #ffffff;
+
+  --shadow-sm: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 1px 12px 0 rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 1px 20px 0 rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 16px 36px 0 rgba(0, 0, 0, 0.16);
+
+  --radius-sm: 2px; /* Shopee uses very sharp, clean lines */
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+  
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: var(--transition);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.2; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+/* ========================================================
+   SHOPEE TOP HEADER & NAVBAR
+   ======================================================== */
+
+.shop-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 8px 2rem;
+  background: linear-gradient(-180deg, #f53d2d, #f63); /* Shopee red-orange gradient header */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  background: var(--text-inverse); /* White box logo like Shopee */
+  box-shadow: var(--shadow-sm);
+}
+
+.brand strong {
+  color: var(--text-inverse);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.brand span {
+  display: block;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: -2px;
+}
+
+/* Header sub-elements */
+.header-top-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.82rem;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 6px;
+}
+
+.header-top-left {
+  display: flex;
+  gap: 14px;
+}
+
+.header-top-left span {
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.header-top-left span:hover {
+  opacity: 1;
+}
+
+.header-top-right {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.top-link-hide-mobile {
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.top-link-hide-mobile:hover {
+  opacity: 1;
+}
+
+.header-auth-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.header-auth-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+}
+
+.header-auth-links a:hover {
+  opacity: 0.8;
+}
+
+.header-auth-links .divider {
+  opacity: 0.6;
+}
+
+.header-user-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.role-portal-link {
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: var(--radius-sm);
+  color: var(--text-inverse);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.role-portal-link:hover {
+  background: var(--text-inverse);
+  color: var(--primary);
+}
+
+.header-logout-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.header-logout-btn:hover {
+  opacity: 0.8;
+}
+
+.header-main-bar {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 4px 0;
+}
+
+.header-actions-right {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.header-refresh-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.header-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.role-chip {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--text-inverse);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cart-pill {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-inverse);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.cart-pill:hover {
+  background: var(--text-inverse);
+  color: var(--primary);
+}
+
+@media (min-width: 901px) {
+  .site-header {
+    padding: 8px 4rem;
+  }
+}
+
+/* Main Container */
+main {
+  width: 100%;
+  max-width: 1200px; /* Shopee standard screen width */
+  margin: 0 auto;
+  padding: 1.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+/* ========================================================
+   HERO / BANNER COMPONENT
+   ======================================================== */
+
+.hero-band {
+  padding: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text-inverse);
+  background: linear-gradient(135deg, #f53d2d, #ff6633);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.hero-band h1 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.hero-band p {
+  max-width: 680px;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.hero-metrics {
+  display: flex;
+  gap: 8px;
+}
+
+.metric {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.metric:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.metric span {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.metric strong {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ========================================================
+   BUTTONS & INPUT FIELDS
+   ======================================================== */
+
+.primary-button,
+.secondary-button,
+.text-button,
+.icon-button {
+  min-height: 40px;
+  border-radius: var(--radius-sm); /* Shopee square buttons */
+  font-weight: 500;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  transition: var(--transition);
+}
+
+.primary-button {
+  color: var(--text-inverse);
+  background: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.primary-button:hover {
+  background: var(--primary-hover);
+}
+
+.primary-button:active {
+  transform: scale(0.99);
+}
+
+.secondary-button {
+  color: #555555;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  box-shadow: var(--shadow-sm);
+}
+
+.secondary-button:hover {
+  background: #f8f8f8;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.text-button {
+  color: var(--text-muted);
+  background: transparent;
+  padding: 0 10px;
+}
+
+.text-button:hover {
+  color: var(--primary);
+}
+
+.icon-button {
+  width: 40px;
+  padding: 0;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.icon-button:hover {
+  color: var(--primary);
+  background: #fcfcfc;
+}
+
+/* Input Fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.field span {
+  color: #555555;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--bg-card);
+  font-size: 0.88rem;
+  transition: var(--transition);
+  box-shadow: inset 0 2px 0 0 rgba(0, 0, 0, 0.02);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 4px rgba(238, 77, 45, 0.2);
+}
+
+.feedback {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  background: #d4edda;
+  animation: fadeIn 0.2s ease;
+}
+
+.feedback.error {
+  border-color: #f5c6cb;
+  color: #721c24;
+  background: #f8d7da;
+}
+
+/* ========================================================
+   CARDS, PANELS & GRIDS
+   ======================================================== */
+
+.panel,
+.filter-panel,
+.product-card,
+.order-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm); /* Shopee square blocks */
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.panel {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panel h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222222;
+  border-bottom: 1px solid #f1f1f1;
+  padding-bottom: 8px;
+  text-transform: capitalize;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+
+.panel-title h2 {
+  color: var(--text-main);
+  flex: 1;
+}
+
+/* ========================================================
+   STOREFRONT & PRODUCT CARD
+   ======================================================== */
+
+.store-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.filter-panel {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.filter-panel h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 2px 2px 2px 10px;
+  background: var(--bg-card);
+}
+
+.search-box input {
+  border: none;
+  padding: 6px 0;
+  min-height: auto;
+  box-shadow: none;
+}
+
+.search-box input:focus {
+  box-shadow: none;
+}
+
+/* Orange search button like Shopee */
+.search-box button,
+.search-box .icon-button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+}
+
+.segmented {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.segmented button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+  border-radius: var(--radius-sm);
+}
+
+.segmented button.active {
+  color: var(--primary);
+  font-weight: 700;
+  background: rgba(238, 77, 45, 0.05);
+}
+
+.segmented button:not(.active):hover {
+  color: var(--primary);
+}
+
+.mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mini-list span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.small-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+code,
+.small-list span {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(238, 77, 45, 0.08);
+}
+
+/* Product Shopee Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.05);
+  border-color: var(--primary);
+}
+
+/* Yêu thích (Favorite) badge */
+.product-card::before {
+  content: "Yêu thích";
+  position: absolute;
+  top: 8px;
+  left: -3px;
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 0 2px 2px 0;
+  z-index: 2;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+/* Sale Tag Ribbon on top-right */
+.product-card::after {
+  content: "-50%";
+  position: absolute;
+  top: 0;
+  right: 8px;
+  background: var(--accent);
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 5px 5px 5px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+  z-index: 2;
+  text-align: center;
+}
+
+.product-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Shopee standard square images */
+  object-fit: cover;
+  display: block;
+  background-color: var(--bg-surface);
+}
+
+.product-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  color: var(--text-inverse);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.product-art span {
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.product-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.product-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-title-row h3 {
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #222222;
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 34px;
+}
+
+/* Hide product type label just like Shopee storefront lists items cleanly */
+.product-title-row span {
+  display: none;
+}
+
+.product-body p {
+  display: none; /* Shopee list cards do not show descriptions */
+}
+
+.product-facts {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.product-facts strong {
+  font-size: 1rem;
+  color: var(--primary); /* Shopee Orange price tag */
+  font-weight: 500;
+}
+
+.product-facts small {
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.product-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.product-actions .primary-button {
+  padding: 0 8px;
+  min-height: 32px;
+  font-size: 0.8rem;
+  flex: 1;
+}
+
+.product-actions .icon-button {
+  width: 32px;
+  min-height: 32px;
+}
+
+/* ========================================================
+   DASHBOARD & GRIDS
+   ======================================================== */
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1.25rem;
+}
+
+.dashboard-grid,
+.admin-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.three-columns {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.four-columns {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.form-grid.single {
+  grid-template-columns: 1fr;
+}
+
+/* Line stacks & List items */
+.line-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.line-item {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.line-item strong {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #222222;
+}
+
+.line-item span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  background: var(--bg-card);
+}
+
+.quantity-stepper button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.8);
+  border-right: 1px solid rgba(0, 0, 0, 0.09);
+}
+
+.quantity-stepper button:last-child {
+  border-right: none;
+  border-left: 1px solid rgba(0, 0, 0, 0.09);
+}
+
+.quantity-stepper button:hover {
+  background: #f8f8f8;
+}
+
+.quantity-stepper b {
+  width: 32px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.session-summary {
+  padding: 14px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-summary span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.session-summary strong {
+  font-size: 0.95rem;
+  color: #222222;
+}
+
+.session-summary p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Orders list cards */
+.order-board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.order-head strong {
+  font-size: 0.95rem;
+  color: #222222;
+}
+
+.order-head span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.order-card b {
+  font-size: 1.05rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.order-card .line-stack {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.order-meta {
+  display: flex;
+  gap: 6px;
+}
+
+.order-meta span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+/* Metric card */
+.metric-card {
+  padding: 18px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-card:hover {
+  border-color: var(--primary);
+}
+
+.metric-card div {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  color: var(--primary);
+  background: var(--primary-light);
+  display: grid;
+  place-items: center;
+}
+
+.metric-card span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.metric-card strong {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #222222;
+}
+
+/* Empty State */
+.empty-state {
+  min-height: 200px;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  background: var(--bg-card);
+}
+
+.empty-state strong {
+  font-size: 0.95rem;
+  color: #222222;
+}
+
+.empty-state span {
+  font-size: 0.8rem;
+}
+
+/* ========================================================
+   HOME & PORTAL LOGIN PAGE
+   ======================================================== */
+
+.home-page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.home-hero {
+  grid-template-columns: 1fr 300px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.2);
+  margin-bottom: 8px;
+}
+
+.home-highlight-card {
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-highlight-card span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.home-highlight-card strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-highlight-card small {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 8px;
+}
+
+.home-card {
+  background: var(--bg-card);
+  padding: 20px;
+}
+
+.home-card p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.feature-list li {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #222222;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feature-list li::before {
+  content: "✓";
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.step-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.step-card {
+  padding: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.step-card strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #222222;
+}
+
+.step-card p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ========================================================
+   AI CHATBOT COMPONENT (SHOPEE CUSTOMER CARE CHAT)
+   ======================================================== */
+
+.chatbot-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(238, 77, 45, 0.4);
+  z-index: 999;
+  border: none;
+  transition: var(--transition);
+}
+
+.chatbot-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(238, 77, 45, 0.5);
+}
+
+.fab-pulse {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(238, 77, 45, 0.3);
+  animation: pulse-ring 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.chatbot-panel {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  width: 380px;
+  height: 540px;
+  background: var(--bg-card);
+  color: #222222;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.2s ease-out;
+}
+
+.chatbot-header {
+  padding: 12px 16px;
+  background: var(--primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.chatbot-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chatbot-header-info div {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbot-header-info strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.chatbot-header-info small {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.chatbot-close {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.chatbot-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f5f5f5; /* Chat logs have Shopee gray background */
+}
+
+/* Custom scrollbar for chat panel */
+.chatbot-messages::-webkit-scrollbar {
+  width: 5px;
+}
+.chatbot-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chatbot-messages::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-full);
+}
+
+.chat-msg {
+  display: flex;
+  gap: 8px;
+  max-width: 85%;
+  animation: fadeIn 0.15s ease;
+}
+
+.chat-msg-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-msg-assistant {
+  align-self: flex-start;
+}
+
+.chat-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-msg-assistant .chat-avatar {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.chat-msg-user .chat-avatar {
+  background: #333333;
+  color: #ffffff;
+}
+
+.chat-bubble {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.chat-msg-assistant .chat-bubble {
+  background: #ffffff;
+  color: #222222;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-top-left-radius: 2px;
+}
+
+.chat-msg-user .chat-bubble {
+  background: #d2f1ff; /* light blue bubble like many message chats */
+  color: #222222;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-top-right-radius: 2px;
+}
+
+.chat-text {
+  word-break: break-word;
+}
+
+.chat-text strong {
+  color: var(--primary);
+}
+
+.chat-source {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  border-top: 1px dashed rgba(0, 0, 0, 0.06);
+  padding-top: 4px;
+}
+
+.chat-products {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.chat-product-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: var(--transition);
+}
+
+.chat-product-card:hover {
+  border-color: var(--primary);
+}
+
+.chat-product-card strong {
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+.chat-product-card span {
+  font-size: 0.72rem;
+  color: #555555;
+}
+
+.chat-product-card small {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.chat-typing {
+  display: flex;
+  gap: 5px;
+  padding: 4px 8px;
+}
+
+.chat-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.chatbot-input {
+  padding: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.09);
+  background: var(--bg-card);
+  display: flex;
+  gap: 8px;
+}
+
+.chatbot-input input {
+  flex: 1;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.chatbot-input input:focus {
+  border-color: var(--primary);
+  box-shadow: none;
+}
+
+.chatbot-send {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.chatbot-send:hover {
+  background: var(--primary-hover);
+}
+
+.chatbot-send:disabled {
+  opacity: 0.5;
+}
+
+/* ========================================================
+   RESPONSIVENESS & MEDIA QUERIES
+   ======================================================== */
+
+@media (max-width: 1200px) {
+  .site-header {
+    padding: 10px 1.25rem;
+  }
+  main {
+    padding: 1.25rem;
+  }
+  .store-layout {
+    grid-template-columns: 1fr;
+  }
+  .filter-panel {
+    position: static;
+  }
+  .two-column,
+  .dashboard-grid,
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    padding: 8px 1.25rem;
+    min-height: auto;
+  }
+  .header-top-left {
+    display: none !important;
+  }
+  .top-link-hide-mobile {
+    display: none !important;
+  }
+  .header-top-bar {
+    justify-content: flex-end;
+    padding-bottom: 4px;
+  }
+  .header-main-bar {
+    gap: 12px;
+  }
+  .hero-band {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+  .hero-metrics {
+    justify-content: flex-start;
+  }
+  .three-columns,
+  .four-columns {
+    grid-template-columns: 1fr !important;
+  }
+  .step-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-main-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .search-box {
+    margin: 0;
+  }
+  .header-actions-right {
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 500px) {
+  .chatbot-panel {
+    width: calc(100vw - 20px);
+    height: calc(100vh - 100px);
+    bottom: 10px;
+    right: 10px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

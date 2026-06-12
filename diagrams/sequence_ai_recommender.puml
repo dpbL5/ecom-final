@@ -1,0 +1,39 @@
+@startuml
+title Sequence: AI Recommender Flow
+actor Customer
+participant Frontend
+participant RecommendationService
+participant AnalyticsService
+participant CatalogService
+participant "AI Model / Feature Store" as Model
+
+Customer -> Frontend: Requests "Recommended for me"
+activate Frontend
+Frontend -> RecommendationService: GET /recommendations?userId=123
+activate RecommendationService
+RecommendationService -> AnalyticsService: fetchUserInteractions(userId)
+activate AnalyticsService
+AnalyticsService --> RecommendationService: interaction_history
+deactivate AnalyticsService
+
+RecommendationService -> Model: scoreCandidates(userProfile, interactions)
+activate Model
+Model --> RecommendationService: scoredProductIds
+deactivate Model
+
+RecommendationService -> CatalogService: fetchProductDetails(scoredProductIds)
+activate CatalogService
+CatalogService --> RecommendationService: productDetails
+deactivate CatalogService
+
+RecommendationService --> Frontend: recommendations(list of products)
+deactivate RecommendationService
+Frontend --> Customer: display recommendations
+
+tip right
+Sources:
+- services/recommendation_service/recommendations/urls.py
+- frontend/src/components/AIChatbot.tsx (similar integration)
+end tip
+
+@enduml

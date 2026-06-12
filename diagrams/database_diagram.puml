@@ -1,0 +1,134 @@
+@startuml
+' ER-style database diagram (tables and foreign keys)
+hide circle
+
+entity users {
+  * id : uuid
+  --
+  email : varchar
+  password_hash : varchar
+  role : varchar
+}
+
+entity customers {
+  * id : uuid
+  --
+  user_id : uuid
+  first_name : varchar
+  last_name : varchar
+  phone : varchar
+}
+
+entity products {
+  * id : uuid
+  --
+  name : varchar
+  description : text
+}
+
+entity product_variants {
+  * id : uuid
+  --
+  product_id : uuid
+  sku : varchar
+  price : numeric
+}
+
+entity categories {
+  * id : uuid
+  --
+  name : varchar
+}
+
+entity carts {
+  * id : uuid
+  --
+  customer_id : uuid
+}
+
+entity cart_items {
+  * id : uuid
+  --
+  cart_id : uuid
+  product_variant_id : uuid
+  quantity : int
+}
+
+entity orders {
+  * id : uuid
+  --
+  customer_id : uuid
+  status : varchar
+  total : numeric
+}
+
+entity order_items {
+  * id : uuid
+  --
+  order_id : uuid
+  product_variant_id : uuid
+  quantity : int
+  price : numeric
+}
+
+entity payments {
+  * id : uuid
+  --
+  order_id : uuid
+  amount : numeric
+  status : varchar
+  provider_transaction_id : varchar
+}
+
+entity shipments {
+  * id : uuid
+  --
+  order_id : uuid
+  carrier : varchar
+  tracking_number : varchar
+  status : varchar
+}
+
+entity warehouses {
+  * id : uuid
+  --
+  location : varchar
+}
+
+entity stock_items {
+  * id : uuid
+  --
+  product_variant_id : uuid
+  warehouse_id : uuid
+  quantity : int
+}
+
+entity reviews {
+  * id : uuid
+  --
+  product_id : uuid
+  customer_id : uuid
+  rating : int
+  content : text
+}
+
+' Relationships
+users ||--o{ customers : "has"
+customers ||--o{ carts : "owns"
+carts ||--o{ cart_items : "contains"
+products ||--o{ product_variants : "has"
+product_variants ||--o{ stock_items : "stocked_in"
+warehouses ||--o{ stock_items : "stores"
+customers ||--o{ orders : "places"
+orders ||--o{ order_items : "includes"
+orders ||--o{ payments : "paid_by"
+orders ||--o{ shipments : "shipped_via"
+products ||--o{ reviews : "reviewed_by"
+customers ||--o{ reviews : "writes"
+
+note right
+This ER diagram is a conceptual mapping of models found under services/*/models.py
+Adjust columns and constraints to match actual migrations.
+end note
+
+@enduml
